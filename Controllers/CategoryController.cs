@@ -103,20 +103,30 @@ namespace Api_Rest_Full_Coding.Controllers
 
 
         [HttpDelete("{id:int:min(1)}")]
-        public ActionResult <Category> Delete (int id)
+        public ActionResult<Category> Delete(int id)
         {
-            var Category = _context.CategoryList.FirstOrDefault(c => c.CategoryId == id);
-            if(Category == null)
+            try
             {
-                return NotFound("Não Encontrado");
+                var Category = _context.CategoryList.FirstOrDefault(c => c.CategoryId == id);
+                if (Category == null)
+                {
+                    return NotFound("Não Encontrado");
+                }
+
+                _context.CategoryList.Remove(Category);
+                _context.SaveChanges();
+
+                return Ok(Category);
+
             }
 
-            _context.CategoryList.Remove(Category);
-            _context.SaveChanges();
 
-            return Ok(Category);
+            catch (Exception)
+            {
+
+                return StatusCode(StatusCodes.Status500InternalServerError, "Servidor Inativo");
+
+            }
+
         }
-
-
     }
-}
